@@ -1,0 +1,18 @@
+{
+  "name": "kulor-plugin-modalPage",
+  "version": "0.0.1",
+  "description": "modalPage",
+  "main": "index.jade",
+  "keywords": [
+    "kulor-modalPage"
+  ],
+  "authors": [
+    "bo.cheng <chen8114@sina.com>"
+  ],
+  "repository"  : {
+    "type"    : "git" ,
+    "url"     : "git@github.com:kulor-developer/kulor-plugin-modalPage.git"
+  } ,
+  "license": "MIT",
+  "homepage": "git@github.com:kulor-developer/kulor.git"
+}
