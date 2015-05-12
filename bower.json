@@ -13,6 +13,10 @@
     "type"    : "git" ,
     "url"     : "git@github.com:kulor-developer/kulor-plugin-modalPage.git"
   } ,
+  "kulor"     : {
+    "requireName"   : "modalPage" ,
+    "jsFileName"    : "page.js"
+  } ,
   "license": "MIT",
   "homepage": "git@github.com:kulor-developer/kulor.git"
 }
