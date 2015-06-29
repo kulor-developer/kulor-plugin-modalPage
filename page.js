@@ -1,8 +1,13 @@
-define( "Page" , [ "Base" , "Template" , "RequireFile" , "ModalView" ] , function( Base , Template , RequireFile , ModalView ){
+define( "ModalPage" , [ "Base" , "Template" , "RequireFile" , "ModalView" ] , function( Base , Template , RequireFile , ModalView ){
 	"use strict"
 	/*!
 	 *	富客户端 提供一个page管理
-	 * 	@pageListId 	{string} 	自定义一个pageListId
+	 * 	@pageListId 		{string} 	自定义一个pageListId
+	 *	@$pageContainer 	{JqueryDom} page主体容器
+	 * 	@opt 				{json}
+	 * 		- pageName 		{string} 	js业务url
+	 * 		- opt 			{json} 	配置项
+	 * 		eg 	: { home : "js/home.js" , page : "js/page.js" }
 	 */
 	var PageList 	= Base.extend( function( pageListId , $pageContainer , opt ){
 		this._pageListConfig 	= {
@@ -47,6 +52,9 @@ define( "Page" , [ "Base" , "Template" , "RequireFile" , "ModalView" ] , functio
 	} ) ,
 		/*!
 		 *	单个page模块
+		 *	@belongPageList 	{PageList}
+		 *	@jsPath 			{string} 	js引用路径
+		 * 	@pageName 			{string} 	page名称
 		 */
 		Page 	= Base.extend( function( belongPageList , jsPath , pageName ){
 			this._pageConfig 	= {

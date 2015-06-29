@@ -1,6 +1,6 @@
 {
   "name": "kulor-plugin-modalPage",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "modalPage",
   "main": "index.jade",
   "keywords": [
