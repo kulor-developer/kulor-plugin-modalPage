@@ -4,26 +4,33 @@ define( "ModalPage" , [ "Base" , "Template" , "RequireFile" , "ModalView" ] , fu
 	 *	富客户端 提供一个page管理
 	 * 	@pageListId 		{string} 	自定义一个pageListId
 	 *	@$pageContainer 	{JqueryDom} page主体容器
-	 * 	@opt 				{json}
-	 * 		- pageName 		{string} 	js业务url
-	 * 		- opt 			{json} 	配置项
+	 *	@pages 				{json}
+	 *		- pageName 		{string} 	js业务url
 	 * 		eg 	: { home : "js/home.js" , page : "js/page.js" }
+	 * 	@opt 				{json}
+	 * 		- tabEvent 				{function} 	
+	 * 		- displayEvent 			{function} 	
 	 */
-	var PageList 	= Base.extend( function( pageListId , $pageContainer , opt ){
+	var PageList 	= Base.extend( function( pageListId , $pageContainer , pages , opt ){
 		this._pageListConfig 	= {
 			$container 		: 0 ,
-			originOpt 		: $.extend( {} , opt )
+			originPages		: $.extend( {} , pages ) ,
+			originOpt 		: $.extend( {} , opt ) ,
+			changeCallback 	: []
 		};
 		this.length 	= 0;
 		if ( $pageContainer.length ) {
 			this.initPageContainer( $pageContainer );
 		}
-		if( opt.opt ){
-			$.extend( this._pageListConfig , opt.opt );
-			delete opt.opt;
+		if( opt ){
+			$.extend( this._pageListConfig , pages , opt );
+			delete opt.options;
 		}
-		this.addPage( opt );
+		this.addPage( pages );
 		this.__pageListConfig.pageItems.push( this );
+		if( this._pageListConfig.tabEvent ){
+			this.addTabEvent( this._pageListConfig.tabEvent , this._pageListConfig.displayEvent );
+		}
 	} , {
 		implements 		: [ new Template() , new RequireFile() ],
 		__pageListConfig 	: {
@@ -46,6 +53,32 @@ define( "ModalPage" , [ "Base" , "Template" , "RequireFile" , "ModalView" ] , fu
 		addPage 		: function( pages ){
 			for( var a in pages ){
 				this[ a ] = new Page( this , pages[ a ] , a );
+			}
+			return this;
+		} ,
+		/*!
+		 * 	添加 tab事件
+		 *	@handle 		{function} 	执行事件 每次即时执行事件
+		 * 	@changeCallback {function} 	页面切换事件 页面display时执行
+		 */
+		addTabEvent 	: function( handle , changeCallback ){
+			var _page 	= this._pageListConfig.originPages;
+			if( $.isFunction( handle ) ){
+				for( var a in _page ){
+					if( a !== "opt" ){
+						handle( a );
+					}
+				}
+			}
+			return this.addTabDisplayEvent( changeCallback );
+		} ,
+		/*!
+		 * 	添加 页面显示切换事件
+		 *	@changeCallback {function} 	页面切换事件 页面display时执行
+		 */
+		addTabDisplayEvent 	: function( changeCallback ){
+			if( $.isFunction( changeCallback ) ){
+				this._pageListConfig.changeCallback.push( changeCallback );
 			}
 			return this;
 		}
@@ -82,12 +115,16 @@ define( "ModalPage" , [ "Base" , "Template" , "RequireFile" , "ModalView" ] , fu
 				return this.setPageToReady.apply( this , arguments );
 			} ,
 			displayPageModal	: function( func ){
-				var _self 		= this ,
-					_$container = this._pageConfig.belongPageList._pageListConfig.$container;
+				var _self 			= this ,
+					_pageListConfig = this._pageConfig.belongPageList._pageListConfig ,
+					_$container 	= _pageListConfig.$container;
 				
 				_self.getPageModal( function(){
 					_$container.find( ".uiSub-page-singlePage" ).removeClass( "active" );
 					_self._pageConfig.$container.addClass( "active" );
+					for( var i = 0 , len = _pageListConfig.changeCallback.length; i < len; i++ ){
+						_pageListConfig.changeCallback[ i ].call( _self , _self._pageConfig.pageName );
+					}
 					if( $.isFunction( func ) ){ func.call( _self ); };
 				} );
 				return this;
